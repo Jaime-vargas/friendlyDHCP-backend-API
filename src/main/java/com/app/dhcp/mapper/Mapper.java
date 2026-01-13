@@ -1,61 +1,68 @@
 package com.app.dhcp.mapper;
 
 import com.app.dhcp.dto.DeviceDto;
-import com.app.dhcp.dto.GlobalConfigDto;
+import com.app.dhcp.dto.NetworkDto;
 import com.app.dhcp.model.Device;
-import com.app.dhcp.model.GlobalConfig;
+import com.app.dhcp.model.Network;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class Mapper {
 
     // --- DEVICE ---
     public static DeviceDto entityToDto(Device device){
-        return new DeviceDto(
-               device.getId(),
-               device.getName(),
-               device.getMac_address(),
-               device.getIp_address()
-       );
+        DeviceDto deviceDto = new DeviceDto();
+        deviceDto.setId(device.getId());
+        deviceDto.setName(device.getName());
+        deviceDto.setMac_address(device.getMac_address());
+        deviceDto.setIp_address(device.getIp_address());
+        deviceDto.setNetwork_id(device.getNetwork().getId());
+        return deviceDto;
     }
     public static Device dtoToEntity(DeviceDto deviceDto){
         Device device = new Device();
-        device.setName(deviceDto.name());
-        device.setMac_address(deviceDto.mac_address());
-        device.setIp_address(deviceDto.ip_address());
+        device.setName(deviceDto.getName());
+        device.setMac_address(deviceDto.getMac_address());
+        device.setIp_address(deviceDto.getIp_address());
         return device;
     }
 
     // --- GLOBAL CONFIG ---
-    public static GlobalConfigDto entityToDto(GlobalConfig globalConfig){
-        return new GlobalConfigDto(
-                globalConfig.getId(),
-                globalConfig.getSubnet(),
-                globalConfig.getNetmask(),
-                globalConfig.getStart_range(),
-                globalConfig.getEnd_Range(),
-                globalConfig.getDefault_lease_time(),
-                globalConfig.getMax_lease_time(),
-                globalConfig.getRouter(),
-                globalConfig.getPrimary_dns(),
-                globalConfig.getSecondary_dns(),
-                globalConfig.getBroadcast()
+    public static NetworkDto entityToDto(Network network){
+        NetworkDto networkDto = new NetworkDto();
+        networkDto.setId(network.getId());
+        networkDto.setSubnet(network.getSubnet());
+        networkDto.setNetmask(network.getNetmask());
+        networkDto.setStart_range(network.getStart_range());
+        networkDto.setEnd_range(network.getEnd_range());
+        networkDto.setDefault_lease_time(network.getDefault_lease_time());
+        networkDto.setMax_lease_time(network.getMax_lease_time());
+        networkDto.setRouter(network.getRouter());
+        networkDto.setPrimary_dns(network.getPrimary_dns());
+        networkDto.setSecondary_dns(network.getSecondary_dns());
+        networkDto.setDevices_count(
+                Optional.ofNullable(network.getDevices())
+                        .map(List::size)
+                        .orElse(0)
         );
+        return networkDto;
     }
 
-    public static GlobalConfig dtoToEntity(GlobalConfigDto globalConfigDto){
-        GlobalConfig globalConfig = new GlobalConfig();
-        globalConfig.setSubnet(globalConfigDto.subnet());
-        globalConfig.setNetmask(globalConfigDto.netmask());
-        globalConfig.setStart_range(globalConfigDto.start_range());
-        globalConfig.setEnd_Range(globalConfigDto.end_range());
-        globalConfig.setDefault_lease_time(globalConfigDto.default_lease_time());
-        globalConfig.setMax_lease_time(globalConfigDto.max_lease_time());
-        globalConfig.setRouter(globalConfigDto.router());
-        globalConfig.setPrimary_dns(globalConfigDto.primary_dns());
-        globalConfig.setSecondary_dns(globalConfigDto.secondary_dns());
-        globalConfig.setBroadcast(globalConfigDto.broadcast());
-        return globalConfig;
+    public static Network dtoToEntity(NetworkDto networkDto){
+        Network network = new Network();
+        network.setSubnet(networkDto.getSubnet());
+        network.setNetmask(networkDto.getNetmask());
+        network.setStart_range(networkDto.getStart_range());
+        network.setEnd_range(networkDto.getEnd_range());
+        network.setDefault_lease_time(networkDto.getDefault_lease_time());
+        network.setMax_lease_time(networkDto.getMax_lease_time());
+        network.setRouter(networkDto.getRouter());
+        network.setPrimary_dns(networkDto.getPrimary_dns());
+        network.setSecondary_dns(networkDto.getSecondary_dns());
+        return network;
     }
 
 }

@@ -1,7 +1,6 @@
 package com.app.dhcp.service;
 
 import com.app.dhcp.dto.DeviceDto;
-import com.app.dhcp.model.Device;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,17 +8,18 @@ import java.util.List;
 @Service
 public class ActionsService {
 
-    private DeviceService deviceService;
+    private final DeviceService deviceService;
+    private final NetworkService networkService;
 
-    public ActionsService(DeviceService deviceService) {
+    public ActionsService(DeviceService deviceService, NetworkService networkService) {
         this.deviceService = deviceService;
+        this.networkService = networkService;
     }
 
     //Create dhpd.conf file
     public void createConfigFile(){
-
         String hosts;
-        List<DeviceDto> deviceDtoList = deviceService.getDevices();
+        List<DeviceDto> deviceDtoList = deviceService.getDeviceList();
 
         deviceDtoList.forEach(device -> {
             String host = """
@@ -28,9 +28,9 @@ public class ActionsService {
                     fixed-address %s;
                 }
                 """.formatted(
-                            device.name(),
-                            device.mac_address(),
-                            device.ip_address()
+                            device.getName(),
+                            device.getMac_address(),
+                            device.getIp_address()
                     );
             System.out.println(host);
         });

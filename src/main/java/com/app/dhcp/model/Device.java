@@ -24,5 +24,8 @@ public class Device {
     @Column(unique=true, nullable=false)
     private String ip_address;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "network_id", nullable = false)
+    private Network network;
 
 }

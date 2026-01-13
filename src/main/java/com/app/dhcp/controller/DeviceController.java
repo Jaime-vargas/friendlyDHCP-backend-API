@@ -19,7 +19,7 @@ public class DeviceController {
 
     @GetMapping
     public ResponseEntity<?> getDevices(){
-        List<DeviceDto> devices = deviceService.getDevices();
+        List<DeviceDto> devices = deviceService.getDeviceList();
         return ResponseEntity.ok().body(devices);
     }
 

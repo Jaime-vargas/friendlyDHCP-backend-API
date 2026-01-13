@@ -6,13 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
 @Entity
-public class GlobalConfig {
+public class Network {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,25 +22,25 @@ public class GlobalConfig {
 
     @Column(unique=true, nullable=false)
     private String subnet;
-    @Column(unique=true, nullable=false)
+    @Column(nullable=false)
     private String netmask;
     @Column(unique=true, nullable=false)
     private String start_range;
     @Column(unique=true, nullable=false)
-    private String end_Range;
+    private String end_range;
 
-    @Column(unique=true, nullable=false)
+    @Column(nullable=false)
     private String default_lease_time;
-    @Column(unique=true, nullable=false)
+    @Column(nullable=false)
     private String max_lease_time;
 
     @Column(unique=true, nullable=false)
     private String router;
-    @Column(unique=true, nullable=false)
+    @Column(nullable=false)
     private String primary_dns;
-    @Column(unique=true, nullable=false)
+    @Column(nullable=false)
     private String secondary_dns;
-    @Column(unique=true, nullable=false)
-    private String broadcast;
 
+    @OneToMany(mappedBy = "network", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Device> devices;
 }
