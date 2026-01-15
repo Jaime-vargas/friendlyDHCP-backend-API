@@ -2,20 +2,14 @@ package com.app.dhcp.service;
 
 import com.app.dhcp.dto.DeviceDto;
 import com.app.dhcp.dto.NetworkDto;
-import lombok.Getter;
+
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.sftp.SFTPClient;
-import net.schmizz.sshj.transport.verification.FingerprintVerifier;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.jpa.domain.JpaSort;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,11 +23,35 @@ public class ActionsService {
     private final DeviceService deviceService;
     private final NetworkService networkService;
     public final Path filePath;
+    private final String sshIpAddress;
+    private final int sshPort;
+    private final String sshUser;
+    private final String sshPassword;
+    private final String sshTaskCopyConfigFile;
+    private final String sshTaskMoveConfigFile;
+    private final String sshTaskRestartDhcpService;
 
-    public ActionsService(DeviceService deviceService, NetworkService networkService, @Value("${config.file.path}") String filePath) {
+    public ActionsService(DeviceService deviceService,
+                          NetworkService networkService,
+                          @Value("${config.file.path}") String filePath,
+                          @Value("${ssh.ipaddress}") String sshIpAddress,
+                          @Value("${ssh.port}") int sshPort,
+                          @Value("${ssh.username}") String sshUser,
+                          @Value("${ssh.password}") String sshPassword,
+                          @Value("${ssh.task.copy-config-file}") String sshTaskCopyConfigFile,
+                          @Value("${ssh.task.move-config-file}") String sshTaskMoveConfigFile,
+                          @Value("${ssh.task.restart-dhcp-service}") String sshTaskRestartDhcpService)
+    {
         this.deviceService = deviceService;
         this.networkService = networkService;
         this.filePath = Paths.get(filePath);
+        this.sshIpAddress = sshIpAddress;
+        this.sshPort = sshPort;
+        this.sshUser = sshUser;
+        this.sshPassword = sshPassword;
+        this.sshTaskCopyConfigFile = sshTaskCopyConfigFile;
+        this.sshTaskMoveConfigFile = sshTaskMoveConfigFile;
+        this.sshTaskRestartDhcpService = sshTaskRestartDhcpService;
     }
 
     public void doall(){
@@ -43,38 +61,30 @@ public class ActionsService {
     }
 
     public void copyFileAndRestartDhcpService(Path configFilePath)  {
-        //CONFIG ON SERVER
+        //CONFIG ON SERVER FOR SUDO WITHOUT PASSWORD
         // create and valid visudo -f /etc/sudoers.d/userfile
         // user ALL=(root) NOPASSWD:/bin/mv /tmp/dhcpd.conf /etc/dhcp/dhcpd.conf,\
         // /bin/systemctl restart dhcpd
 
         try(SSHClient ssh = new SSHClient()){
             ssh.addHostKeyVerifier(new PromiscuousVerifier());
-            ssh.connect("192.168.100.38", 22);
-            ssh.authPassword("jaime", "password");
+            ssh.connect(sshIpAddress, sshPort);
+            ssh.authPassword(sshUser, sshPassword);
 
             // METHOD TO CONNECT AS SFTP
             try(SFTPClient sftp = ssh.newSFTPClient()) {
-                sftp.put(configFilePath.toString(), "/tmp/dhcpd.conf");
+                sftp.put(configFilePath.toString(), sshTaskCopyConfigFile);
             }
 
             // METHOD TO EXEC COMMANDS
             try(Session session = ssh.startSession()) {
-                session.exec("sudo mv /tmp/dhcpd.conf /etc/dhcp/dhcpd.conf");
+                session.exec(sshTaskMoveConfigFile);
             }
             try(Session session = ssh.startSession()) {
-                Session.Command command = session.exec("sudo systemctl restart dhcpd");
+                Session.Command command = session.exec(sshTaskRestartDhcpService);
                 command.join();
                 String stdout = new String(command.getInputStream().readAllBytes());
                 String stderr = new String(command.getErrorStream().readAllBytes());
-                System.out.println(stdout);
-                System.out.println(stderr);
-            }
-            try(Session session = ssh.startSession()) {
-                Session.Command command2 = session.exec("fastfetch");
-                command2.join();
-                String stdout = new String(command2.getInputStream().readAllBytes());
-                String stderr = new String(command2.getErrorStream().readAllBytes());
                 System.out.println(stdout);
                 System.out.println(stderr);
             }

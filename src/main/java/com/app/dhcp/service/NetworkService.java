@@ -40,11 +40,20 @@ public class NetworkService {
     }
 
     public NetworkDto updateNetwork(Long networkId, NetworkDto networkDto){
-        networkRepository.findById(networkId).orElseThrow(
+        Network network = networkRepository.findById(networkId).orElseThrow(
                 () ->  new HandleException(HttpStatus.BAD_REQUEST, HttpStatusError.BAD_REQUEST, ErrorMessages.CONFIG_NOT_FOUND.toString() + networkId)
         );
-        Network network = Mapper.dtoToEntity(networkDto);
-        network.setId(networkId);
+        network.setName(networkDto.getName());
+        network.setSubnet(networkDto.getSubnet());
+        network.setNetmask(networkDto.getNetmask());
+        network.setStart_range(networkDto.getStart_range());
+        network.setEnd_range(networkDto.getEnd_range());
+        network.setDefault_lease_time(networkDto.getDefault_lease_time());
+        network.setMax_lease_time(networkDto.getMax_lease_time());
+        network.setRouter(networkDto.getRouter());
+        network.setPrimary_dns(networkDto.getPrimary_dns());
+        network.setSecondary_dns(networkDto.getSecondary_dns());
+
         networkRepository.save(network);
         return Mapper.entityToDto(network);
     }

@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class ActionsController {
 
-    private ActionsService actionsService;
+    private final ActionsService actionsService;
     public ActionsController(ActionsService actionsService) {
         this.actionsService = actionsService;
     }
 
-    @GetMapping("/config")
+    @GetMapping("/apply-config")
     public ResponseEntity<?> crateConfigFile(){
         actionsService.doall();
         return ResponseEntity.ok().build();

@@ -20,4 +20,5 @@ public class DeviceDto{
     String mac_address;
     String ip_address;
     Long network_id;
+    String network_name;
 }

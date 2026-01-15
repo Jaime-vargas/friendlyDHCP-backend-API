@@ -20,6 +20,7 @@ public class Mapper {
         deviceDto.setMac_address(device.getMac_address());
         deviceDto.setIp_address(device.getIp_address());
         deviceDto.setNetwork_id(device.getNetwork().getId());
+        deviceDto.setNetwork_name(device.getNetwork().getName());
         return deviceDto;
     }
     public static Device dtoToEntity(DeviceDto deviceDto){
@@ -27,6 +28,7 @@ public class Mapper {
         device.setName(deviceDto.getName());
         device.setMac_address(deviceDto.getMac_address());
         device.setIp_address(deviceDto.getIp_address());
+        // NOTE: Network is set in the service layer
         return device;
     }
 
