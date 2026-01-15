@@ -34,6 +34,7 @@ public class Mapper {
     public static NetworkDto entityToDto(Network network){
         NetworkDto networkDto = new NetworkDto();
         networkDto.setId(network.getId());
+        networkDto.setName(network.getName());
         networkDto.setSubnet(network.getSubnet());
         networkDto.setNetmask(network.getNetmask());
         networkDto.setStart_range(network.getStart_range());
@@ -53,6 +54,7 @@ public class Mapper {
 
     public static Network dtoToEntity(NetworkDto networkDto){
         Network network = new Network();
+        network.setName(networkDto.getName());
         network.setSubnet(networkDto.getSubnet());
         network.setNetmask(networkDto.getNetmask());
         network.setStart_range(networkDto.getStart_range());

@@ -12,6 +12,7 @@ import lombok.Setter;
 
 public class NetworkDto {
     Long id;
+    String name;
     String subnet;
     String netmask;
     String start_range;
@@ -22,5 +23,4 @@ public class NetworkDto {
     String primary_dns;
     String secondary_dns;
     int devices_count;
-
 }
