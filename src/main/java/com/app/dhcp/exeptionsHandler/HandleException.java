@@ -4,6 +4,7 @@ import com.app.dhcp.enums.HttpStatusError;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 @Getter
 public class HandleException extends RuntimeException {
@@ -15,5 +16,4 @@ public class HandleException extends RuntimeException {
         this.httpStatusCode = httpStatusCode;
         this.httpStatusError = httpStatusError;
     }
-
 }

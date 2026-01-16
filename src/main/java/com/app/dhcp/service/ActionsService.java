@@ -61,10 +61,6 @@ public class ActionsService {
     }
 
     public void copyFileAndRestartDhcpService(Path configFilePath)  {
-        //CONFIG ON SERVER FOR SUDO WITHOUT PASSWORD
-        // create and valid visudo -f /etc/sudoers.d/userfile
-        // user ALL=(root) NOPASSWD:/bin/mv /tmp/dhcpd.conf /etc/dhcp/dhcpd.conf,\
-        // /bin/systemctl restart dhcpd
 
         try(SSHClient ssh = new SSHClient()){
             ssh.addHostKeyVerifier(new PromiscuousVerifier());

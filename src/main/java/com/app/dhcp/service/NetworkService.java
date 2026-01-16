@@ -1,5 +1,6 @@
 package com.app.dhcp.service;
 
+import com.app.dhcp.Valid.Valid;
 import com.app.dhcp.dto.NetworkDto;
 import com.app.dhcp.enums.ErrorMessages;
 import com.app.dhcp.enums.HttpStatusError;
@@ -36,6 +37,7 @@ public class NetworkService {
 
     public NetworkDto createNetwork(NetworkDto networkDto){
         Network network = Mapper.dtoToEntity(networkDto);
+        Valid.validNetworkData(network);
         return Mapper.entityToDto(networkRepository.save(network));
     }
 
@@ -53,7 +55,7 @@ public class NetworkService {
         network.setRouter(networkDto.getRouter());
         network.setPrimary_dns(networkDto.getPrimary_dns());
         network.setSecondary_dns(networkDto.getSecondary_dns());
-
+        Valid.validNetworkData(network);
         networkRepository.save(network);
         return Mapper.entityToDto(network);
     }
