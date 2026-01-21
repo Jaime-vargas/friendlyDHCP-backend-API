@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 public class DeviceDto{
     Long id;
+    String category;
     String name;
     String mac_address;
     String ip_address;

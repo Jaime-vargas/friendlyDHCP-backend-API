@@ -45,10 +45,11 @@ public class DeviceService {
     }
 
     public DeviceDto createDevice(DeviceDto deviceDto){
-        Device device = Mapper.dtoToEntity(deviceDto);
         Network network = networkRepository.findById(deviceDto.getNetwork_id()).orElseThrow(
                 () ->  new HandleException(HttpStatus.BAD_REQUEST, HttpStatusError.BAD_REQUEST, ErrorMessages.CONFIG_NOT_FOUND.getMessage() + deviceDto.getNetwork_id())
         );
+        Device device = Mapper.dtoToEntity(deviceDto);
+        device.setCategory(deviceDto.getCategory().toLowerCase());
         device.setNetwork(network);
         Valid.validDeviceData(device);
         device = deviceRepository.save(device);
@@ -59,10 +60,11 @@ public class DeviceService {
         deviceRepository.findById(deviceId).orElseThrow(
                 () -> new HandleException(HttpStatus.BAD_REQUEST, HttpStatusError.BAD_REQUEST, ErrorMessages.DEVICE_NOT_FOUND.getMessage() + deviceId)
         );
-        Device device = Mapper.dtoToEntity(deviceDto);
         Network network = networkRepository.findById(deviceDto.getNetwork_id()).orElseThrow(
                 () ->  new HandleException(HttpStatus.BAD_REQUEST, HttpStatusError.BAD_REQUEST, ErrorMessages.CONFIG_NOT_FOUND.getMessage() + deviceDto.getNetwork_id())
         );
+        Device device = Mapper.dtoToEntity(deviceDto);
+        device.setCategory(deviceDto.getCategory().toLowerCase());
         device.setNetwork(network);
         device.setId(deviceId);
         Valid.validDeviceData(device);
