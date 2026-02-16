@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/global-config")
+@RequestMapping("/api/v1/networks")
 public class NetworkController {
 
     private final NetworkService networkService;

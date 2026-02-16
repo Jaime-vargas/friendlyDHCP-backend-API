@@ -75,19 +75,19 @@ public class JwtUtil {
             jwtParseBuilder.parseClaimsJws(token);
             return true;
         }catch (ExpiredJwtException e) {
-            throw new HandleException(HttpStatus.UNAUTHORIZED, HttpStatusError.UNAUTHORIZED, JwtValidationError.TOKEN_HAS_EXPIRED.toString());
+            throw new HandleException(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED, JwtValidationError.TOKEN_HAS_EXPIRED.toString());
 
         } catch (MalformedJwtException e) {
-            throw new HandleException(HttpStatus.BAD_REQUEST, HttpStatusError.BAD_REQUEST, JwtValidationError.TOKEN_HAS_WRONG_FORMAT.toString());
+            throw new HandleException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, JwtValidationError.TOKEN_HAS_WRONG_FORMAT.toString());
 
         } catch (UnsupportedJwtException e) {
-            throw new HandleException(HttpStatus.BAD_REQUEST, HttpStatusError.BAD_REQUEST, JwtValidationError.TOKEN_NO_COMPATIBLE.toString());
+            throw new HandleException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, JwtValidationError.TOKEN_NO_COMPATIBLE.toString());
 
         } catch (IllegalArgumentException e) {
-            throw new HandleException(HttpStatus.BAD_REQUEST, HttpStatusError.BAD_REQUEST, JwtValidationError.TOKEN_NOT_VALID.toString());
+            throw new HandleException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, JwtValidationError.TOKEN_NOT_VALID.toString());
 
         } catch (Exception e) {
-            throw new HandleException(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatusError.SERVER_ERROR, JwtValidationError.TOKEN_COULD_NOT_VALIDATE.toString());
+            throw new HandleException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, JwtValidationError.TOKEN_COULD_NOT_VALIDATE.toString());
         }
     }
 

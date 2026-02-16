@@ -14,10 +14,11 @@ public class GlobalExeptionHandler {
     @ExceptionHandler(HandleException.class)
     public ResponseEntity<Map<String, Object>> handleCustomException(HandleException ex){
         Map<String,Object> body = new LinkedHashMap<>();
+        body.put("HttpStatusCode", ex.getHttpStatusCode());
         body.put("message",ex.getMessage());
-        body.put("HttpStatusError", ex.getHttpStatusError());
+        body.put("HttpStatus", ex.getHttpStatus());
 
-        return new ResponseEntity<>(body, ex.getHttpStatusCode());
+        return new ResponseEntity<>(body, ex.getHttpStatus());
     }
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)

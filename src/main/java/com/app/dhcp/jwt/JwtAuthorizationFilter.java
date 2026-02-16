@@ -1,6 +1,5 @@
 package com.app.dhcp.jwt;
 
-import com.app.dhcp.enums.HttpStatusError;
 import com.app.dhcp.exeptionsHandler.HandleException;
 
 import jakarta.servlet.FilterChain;
@@ -66,16 +65,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     public void sendErrorResponse(HttpServletResponse response, HandleException exception) throws IOException {
 
-        HttpStatus httpStatusCode = exception.getHttpStatusCode();
-        HttpStatusError httpStatusError = exception.getHttpStatusError();
+        int httpStatusCode = exception.getHttpStatusCode();
+        HttpStatus httpStatus = exception.getHttpStatus();
         String message = exception.getMessage();
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("status", httpStatusCode);
-        body.put("error", httpStatusError);
+        body.put("error", httpStatus);
         body.put("message", message);
 
-        response.setStatus(httpStatusCode.value());
+        response.setStatus(httpStatusCode);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(body.toString());

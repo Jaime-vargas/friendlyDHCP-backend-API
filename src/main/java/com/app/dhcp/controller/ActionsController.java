@@ -20,4 +20,6 @@ public class ActionsController {
         actionsService.doall();
         return ResponseEntity.ok().build();
     }
+
+
 }

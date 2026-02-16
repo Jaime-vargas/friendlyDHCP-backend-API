@@ -30,7 +30,7 @@ public class NetworkService {
 
     public NetworkDto getNetworkById(Long networkId){
         Network network = networkRepository.findById(networkId).orElseThrow(
-                () ->  new HandleException(HttpStatus.BAD_REQUEST, HttpStatusError.BAD_REQUEST, ErrorMessages.CONFIG_NOT_FOUND.getMessage() + networkId)
+                () ->  new HandleException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ErrorMessages.CONFIG_NOT_FOUND.getMessage() + networkId)
         );
         return Mapper.entityToDto(network);
     }
@@ -43,7 +43,7 @@ public class NetworkService {
 
     public NetworkDto updateNetwork(Long networkId, NetworkDto networkDto){
         Network network = networkRepository.findById(networkId).orElseThrow(
-                () ->  new HandleException(HttpStatus.BAD_REQUEST, HttpStatusError.BAD_REQUEST, ErrorMessages.CONFIG_NOT_FOUND.toString() + networkId)
+                () ->  new HandleException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ErrorMessages.CONFIG_NOT_FOUND.toString() + networkId)
         );
         network.setName(networkDto.getName());
         network.setSubnet(networkDto.getSubnet());
@@ -62,7 +62,7 @@ public class NetworkService {
 
     public void deleteNetworkById(Long networkId){
         Network network = networkRepository.findById(networkId).orElseThrow(
-                () ->  new HandleException(HttpStatus.BAD_REQUEST, HttpStatusError.BAD_REQUEST, ErrorMessages.CONFIG_NOT_FOUND.toString() + networkId)
+                () ->  new HandleException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ErrorMessages.CONFIG_NOT_FOUND.toString() + networkId)
         );
         networkRepository.delete(network);
     }

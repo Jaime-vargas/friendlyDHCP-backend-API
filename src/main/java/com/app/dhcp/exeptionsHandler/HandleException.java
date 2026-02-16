@@ -8,12 +8,12 @@ import org.springframework.http.HttpStatusCode;
 
 @Getter
 public class HandleException extends RuntimeException {
-    private final HttpStatus httpStatusCode;
-    private final HttpStatusError httpStatusError;
+    private final int httpStatusCode;
+    private final HttpStatus httpStatus;
 
-    public HandleException(HttpStatus httpStatusCode, HttpStatusError httpStatusError, String message) {
+    public HandleException(int httpStatusCode, HttpStatus httpStatus, String message) {
         super(message);
         this.httpStatusCode = httpStatusCode;
-        this.httpStatusError = httpStatusError;
+        this.httpStatus = httpStatus;
     }
 }
