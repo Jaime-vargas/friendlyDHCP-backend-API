@@ -3,11 +3,15 @@ package com.app.dhcp.service;
 import com.app.dhcp.dto.DeviceDto;
 import com.app.dhcp.dto.NetworkDto;
 
+import com.app.dhcp.exeptionsHandler.HandleException;
+import com.app.dhcp.model.Configuration;
+import com.app.dhcp.repository.ConfigurationRepository;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,43 +22,47 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 @Service
-public class ActionsService {
+public class ConfigurationService {
 
     private final DeviceService deviceService;
     private final NetworkService networkService;
     public final Path filePath;
-    private final String sshIpAddress;
-    private final int sshPort;
-    private final String sshUser;
-    private final String sshPassword;
-    private final String sshTaskCopyConfigFile;
-    private final String sshTaskMoveConfigFile;
-    private final String sshTaskRestartDhcpService;
+    //private final String sshIpAddress;
+    //private final int sshPort;
+    //private final String sshUser;
+    //private final String sshPassword;
+    //private final String sshTaskCopyConfigFile;
+    //private final String sshTaskMoveConfigFile;
+    //private final String sshTaskRestartDhcpService;
 
-    public ActionsService(DeviceService deviceService,
-                          NetworkService networkService,
-                          @Value("${config.file.path}") String filePath,
-                          @Value("${ssh.ipaddress}") String sshIpAddress,
-                          @Value("${ssh.port}") int sshPort,
-                          @Value("${ssh.username}") String sshUser,
-                          @Value("${ssh.password}") String sshPassword,
-                          @Value("${ssh.task.copy-config-file}") String sshTaskCopyConfigFile,
-                          @Value("${ssh.task.move-config-file}") String sshTaskMoveConfigFile,
-                          @Value("${ssh.task.restart-dhcp-service}") String sshTaskRestartDhcpService)
+    private final ConfigurationRepository configurationRepository;
+    public ConfigurationService(DeviceService deviceService,
+                                NetworkService networkService,
+                                ConfigurationRepository configurationRepository,
+                                @Value("${config.file.path}") String filePath
+                                //@Value("${ssh.ipaddress}") String sshIpAddress,
+                                //@Value("${ssh.port}") int sshPort,
+                                //@Value("${ssh.username}") String sshUser,
+                                //@Value("${ssh.password}") String sshPassword,
+                                //@Value("${ssh.task.copy-config-file}") String sshTaskCopyConfigFile,
+                                //@Value("${ssh.task.move-config-file}") String sshTaskMoveConfigFile,
+                                //@Value("${ssh.task.restart-dhcp-service}") String sshTaskRestartDhcpService
+    )
     {
         this.deviceService = deviceService;
         this.networkService = networkService;
+        this.configurationRepository = configurationRepository;
         this.filePath = Paths.get(filePath);
-        this.sshIpAddress = sshIpAddress;
-        this.sshPort = sshPort;
-        this.sshUser = sshUser;
-        this.sshPassword = sshPassword;
-        this.sshTaskCopyConfigFile = sshTaskCopyConfigFile;
-        this.sshTaskMoveConfigFile = sshTaskMoveConfigFile;
-        this.sshTaskRestartDhcpService = sshTaskRestartDhcpService;
+        //this.sshIpAddress = sshIpAddress;
+        //this.sshPort = sshPort;
+        //this.sshUser = sshUser;
+        //this.sshPassword = sshPassword;
+        //this.sshTaskCopyConfigFile = sshTaskCopyConfigFile;
+        //this.sshTaskMoveConfigFile = sshTaskMoveConfigFile;
+        //this.sshTaskRestartDhcpService = sshTaskRestartDhcpService;
     }
 
-    public void doall(){
+    public void doAll(){
         StringBuilder configString = generateConfigString();
         Path configFilePath = createConfigFile(configString);
         copyFileAndRestartDhcpService(configFilePath);
@@ -62,31 +70,29 @@ public class ActionsService {
 
     public void copyFileAndRestartDhcpService(Path configFilePath)  {
 
+        Configuration configuration = configurationRepository.findById(1L).orElseThrow(
+                () -> new HandleException(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT, "Does not exist configuration")
+        );
+
         try(SSHClient ssh = new SSHClient()){
             ssh.addHostKeyVerifier(new PromiscuousVerifier());
-            ssh.connect(sshIpAddress, sshPort);
-            ssh.authPassword(sshUser, sshPassword);
+            ssh.connect(configuration.getSshIpAddress(), configuration.getSshPort());
+            ssh.authPassword(configuration.getSshUser(), configuration.getSshPassword());
 
             // METHOD TO CONNECT AS SFTP
             try(SFTPClient sftp = ssh.newSFTPClient()) {
-                sftp.put(configFilePath.toString(), sshTaskCopyConfigFile);
+                sftp.put(configFilePath.toString(), configuration.getRouteToCopyConfigFile());
             }
 
             // METHOD TO EXEC COMMANDS
             try(Session session = ssh.startSession()) {
-                session.exec(sshTaskMoveConfigFile);
+                session.exec(configuration.getCommandToMoveConfigFile());
             }
             try(Session session = ssh.startSession()) {
-                Session.Command command = session.exec(sshTaskRestartDhcpService);
-                command.join();
-                String stdout = new String(command.getInputStream().readAllBytes());
-                String stderr = new String(command.getErrorStream().readAllBytes());
-                System.out.println(stdout);
-                System.out.println(stderr);
+                Session.Command command = session.exec(configuration.getCommandToRestartService());
             }
         }catch (IOException e){
-            System.out.println("NO se conecto");
-            System.out.println(e.getMessage());
+            throw new HandleException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Does not exist configuration: " + e.getMessage());
         }
     }
 
@@ -160,9 +166,6 @@ public class ActionsService {
                 ));
             });
         });
-
-        System.out.println(configString.toString());
-
         return configString;
     }
 

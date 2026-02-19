@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DeviceService {
@@ -46,10 +47,10 @@ public class DeviceService {
 
     public DeviceDto createDevice(DeviceDto deviceDto){
         Network network = networkRepository.findById(deviceDto.getNetwork_id()).orElseThrow(
-                () ->  new HandleException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ErrorMessages.CONFIG_NOT_FOUND.getMessage() + deviceDto.getNetwork_id())
+                () ->  new HandleException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, ErrorMessages.CONFIG_NOT_FOUND.getMessage() + deviceDto.getNetwork_id())
         );
         Device device = Mapper.dtoToEntity(deviceDto);
-        device.setCategory(deviceDto.getCategory().toLowerCase());
+        device.setCategory(Optional.ofNullable(deviceDto.getCategory()).orElse("").toLowerCase());
         device.setNetwork(network);
         Valid.validDeviceData(device);
         device = deviceRepository.save(device);

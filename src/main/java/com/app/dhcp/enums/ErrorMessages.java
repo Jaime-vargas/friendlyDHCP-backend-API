@@ -15,7 +15,7 @@ public enum ErrorMessages {
     DEVICE_NOT_FOUND("El dispositivo no fue encontrado con el id: "),
 
     // Config validations
-    CONFIG_NOT_FOUND("Configuración no encontrada id: "),
+    CONFIG_NOT_FOUND("Red no encontrada id: "),
 
     // Data validations
     MAC_NOT_VALID("El formato de dirección MAC no es valido: "),
