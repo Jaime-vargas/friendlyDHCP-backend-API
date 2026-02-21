@@ -6,6 +6,7 @@ import com.app.dhcp.dto.NetworkDto;
 import com.app.dhcp.exeptionsHandler.HandleException;
 import com.app.dhcp.model.Configuration;
 import com.app.dhcp.repository.ConfigurationRepository;
+import jakarta.transaction.Transactional;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.sftp.SFTPClient;
@@ -62,6 +63,31 @@ public class ConfigurationService {
         //this.sshTaskRestartDhcpService = sshTaskRestartDhcpService;
     }
 
+    public Configuration getConfiguration(){
+        if (configurationRepository.findById(1L).isEmpty()){
+            configurationRepository.save(new Configuration(1L));
+        }
+        return configurationRepository.findById(1L).orElseThrow(
+                () -> new HandleException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Problem with configuration id: 1")
+        );
+    }
+
+    @Transactional
+    public Configuration updateConfiguration(Configuration configuration){
+        Configuration configurationToEdit = configurationRepository.findById(1L).orElseThrow(
+                () -> new HandleException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Problem with configuration id: 1")
+        );
+        configurationToEdit.setSshIpAddress(configuration.getSshIpAddress());
+        configurationToEdit.setSshPort(configuration.getSshPort());
+        configurationToEdit.setSshUser(configuration.getSshUser());
+        configurationToEdit.setSshPassword(configuration.getSshPassword());
+        configurationToEdit.setRouteToCopyConfigFile(configuration.getRouteToCopyConfigFile());
+        configurationToEdit.setCommandToMoveConfigFile(configuration.getCommandToMoveConfigFile());
+        configurationToEdit.setCommandToRestartService(configuration.getCommandToRestartService());
+
+        return configurationRepository.save(configurationToEdit);
+    }
+
     public void doAll(){
         StringBuilder configString = generateConfigString();
         Path configFilePath = createConfigFile(configString);
@@ -71,7 +97,7 @@ public class ConfigurationService {
     public void copyFileAndRestartDhcpService(Path configFilePath)  {
 
         Configuration configuration = configurationRepository.findById(1L).orElseThrow(
-                () -> new HandleException(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT, "Does not exist configuration")
+                () -> new HandleException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Does not exist configuration")
         );
 
         try(SSHClient ssh = new SSHClient()){

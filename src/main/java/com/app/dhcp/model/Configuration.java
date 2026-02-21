@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 @Entity
 public class Configuration {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     String sshIpAddress;
     int sshPort;
@@ -27,4 +26,8 @@ public class Configuration {
     String routeToCopyConfigFile;
     String commandToMoveConfigFile;
     String commandToRestartService;
+
+    public Configuration(Long id){
+        this.id = id;
+    }
 }

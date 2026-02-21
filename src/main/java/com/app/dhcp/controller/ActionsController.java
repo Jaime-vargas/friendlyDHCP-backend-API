@@ -1,13 +1,12 @@
 package com.app.dhcp.controller;
 
+import com.app.dhcp.model.Configuration;
 import com.app.dhcp.service.ConfigurationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/configuration")
 public class ActionsController {
 
     private final ConfigurationService configurationService;
@@ -15,13 +14,21 @@ public class ActionsController {
         this.configurationService = configurationService;
     }
 
-    @GetMapping("/apply-config")
-    public ResponseEntity<?> crateConfigFile(){
+    @PostMapping("/apply")
+    public ResponseEntity<?> applyConfiguration(){
         configurationService.doAll();
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping()
+    public ResponseEntity<Configuration> getConfiguration(){
+        Configuration configuration = configurationService.getConfiguration();
+        return ResponseEntity.ok().body(configuration);
+    }
 
-
-
+    @PostMapping()
+    public ResponseEntity<Configuration> updateConfiguration(@RequestBody Configuration configuration){
+        Configuration updatedConfiguration = configurationService.updateConfiguration(configuration);
+        return ResponseEntity.ok().body(updatedConfiguration);
+    }
 }
