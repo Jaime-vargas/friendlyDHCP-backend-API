@@ -26,7 +26,6 @@ public class Configuration {
     String routeToCopyConfigFile;
     String commandToMoveConfigFile;
     String commandToRestartService;
-
     public Configuration(Long id){
         this.id = id;
     }

@@ -28,39 +28,17 @@ public class ConfigurationService {
     private final DeviceService deviceService;
     private final NetworkService networkService;
     public final Path filePath;
-    //private final String sshIpAddress;
-    //private final int sshPort;
-    //private final String sshUser;
-    //private final String sshPassword;
-    //private final String sshTaskCopyConfigFile;
-    //private final String sshTaskMoveConfigFile;
-    //private final String sshTaskRestartDhcpService;
 
     private final ConfigurationRepository configurationRepository;
     public ConfigurationService(DeviceService deviceService,
                                 NetworkService networkService,
                                 ConfigurationRepository configurationRepository,
-                                @Value("${config.file.path}") String filePath
-                                //@Value("${ssh.ipaddress}") String sshIpAddress,
-                                //@Value("${ssh.port}") int sshPort,
-                                //@Value("${ssh.username}") String sshUser,
-                                //@Value("${ssh.password}") String sshPassword,
-                                //@Value("${ssh.task.copy-config-file}") String sshTaskCopyConfigFile,
-                                //@Value("${ssh.task.move-config-file}") String sshTaskMoveConfigFile,
-                                //@Value("${ssh.task.restart-dhcp-service}") String sshTaskRestartDhcpService
-    )
+                                @Value("${config.file.path}") String filePath )
     {
         this.deviceService = deviceService;
         this.networkService = networkService;
         this.configurationRepository = configurationRepository;
         this.filePath = Paths.get(filePath);
-        //this.sshIpAddress = sshIpAddress;
-        //this.sshPort = sshPort;
-        //this.sshUser = sshUser;
-        //this.sshPassword = sshPassword;
-        //this.sshTaskCopyConfigFile = sshTaskCopyConfigFile;
-        //this.sshTaskMoveConfigFile = sshTaskMoveConfigFile;
-        //this.sshTaskRestartDhcpService = sshTaskRestartDhcpService;
     }
 
     public Configuration getConfiguration(){

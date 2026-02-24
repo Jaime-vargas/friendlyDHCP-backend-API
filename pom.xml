@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.app.dhcp</groupId>
 	<artifactId>friendlyDHCP</artifactId>
-	<version>0.2.0</version>
+	<version>1.0.0</version>
 	<name>friendlyDHCP</name>
 	<description>Proyecto para gestion de DHCP</description>
 	<url/>
