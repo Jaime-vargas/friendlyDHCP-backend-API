@@ -1,6 +1,5 @@
 package com.app.dhcp.jwt;
 
-import com.app.dhcp.enums.HttpStatusError;
 import com.app.dhcp.enums.JwtValidationError;
 import com.app.dhcp.exeptionsHandler.HandleException;
 import io.jsonwebtoken.*;
@@ -24,7 +23,7 @@ public class JwtUtil {
     private final JwtParser jwtParseBuilder;
 
     public JwtUtil( @Value("${jwt.secret.key}") String secretKey,
-                    @Value("${jwt.time.expiration}")String timeExpiration) {
+                    @Value("${JWT_TIME_EXPIRATION}")String timeExpiration) {
         this.secretKey = secretKey;
         this.timeExpiration = timeExpiration;
 

@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ConfigurationService {
@@ -158,20 +159,20 @@ public class ConfigurationService {
         networkDtoList.forEach(network -> {
             List<DeviceDto> deviceDtoList = deviceService.getDeviceListByNetworkId(network.getId());
             deviceDtoList.forEach(deviceDto -> {
-                configString.append("""
+                if (deviceDto.getManaged().equals(Boolean.TRUE)){
+                    configString.append("""
                 host %s {
                     hardware ethernet %s;
                     fixed-address %s;
                 }
                 """.formatted(
-                        deviceDto.getName(),
-                        deviceDto.getMac_address(),
-                        deviceDto.getIp_address()
-                ));
+                            deviceDto.getName(),
+                            deviceDto.getMac_address(),
+                            deviceDto.getIp_address()
+                    ));
+                }
             });
         });
         return configString;
     }
-
-
 }

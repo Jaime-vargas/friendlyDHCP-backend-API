@@ -1,6 +1,7 @@
 package com.app.dhcp.controller;
 
 import com.app.dhcp.dto.DeviceDto;
+import com.app.dhcp.model.Device;
 import com.app.dhcp.service.DeviceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,19 @@ public class DeviceController {
     public ResponseEntity<?> createDevice(@RequestBody DeviceDto deviceDto){
         deviceDto = deviceService.createDevice(deviceDto);
         return ResponseEntity.ok().body(deviceDto);
+    }
+
+    @PatchMapping("/{deviceId}/change-managed-status")
+    public ResponseEntity<?> changeDeviceManagedStatus (@PathVariable Long deviceId){
+        deviceService.changeDeviceManagedStatus(deviceId);
+        return ResponseEntity.ok().build();
+    }
+
+    // DUE TO CHANGES ON ENTITY THIS METHOD IS USED TO ADAPT CURRENT DEVICES TO NEW ENTITY STRUCTURE, IT CAN BE DELETED IN THE FUTURE
+    @PostMapping("/normalize")
+    public ResponseEntity<?> normalize(){
+        deviceService.validateAndNormalizeDevices();
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{deviceId}")

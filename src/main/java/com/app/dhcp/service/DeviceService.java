@@ -10,6 +10,7 @@ import com.app.dhcp.model.Device;
 import com.app.dhcp.model.Network;
 import com.app.dhcp.repository.DeviceRepository;
 import com.app.dhcp.repository.NetworkRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -38,13 +39,6 @@ public class DeviceService {
         return deviceList.stream().map(Mapper::entityToDto).toList();
     }
 
-    public DeviceDto getDeviceById(Long deviceId){
-        Device device = deviceRepository.findById(deviceId).orElseThrow(
-                () ->  new HandleException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ErrorMessages.DEVICE_NOT_FOUND.getMessage() +  deviceId)
-        );
-        return Mapper.entityToDto(device);
-    }
-
     public DeviceDto createDevice(DeviceDto deviceDto){
         Network network = networkRepository.findById(deviceDto.getNetwork_id()).orElseThrow(
                 () ->  new HandleException(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, ErrorMessages.CONFIG_NOT_FOUND.getMessage() + deviceDto.getNetwork_id())
@@ -53,6 +47,7 @@ public class DeviceService {
         device.setCategory(Optional.ofNullable(deviceDto.getCategory()).orElse("").toLowerCase());
         device.setNetwork(network);
         Valid.validDeviceData(device);
+        device.setManaged(Boolean.TRUE);
         device = deviceRepository.save(device);
         return Mapper.entityToDto(device);
     }
@@ -74,6 +69,14 @@ public class DeviceService {
         return Mapper.entityToDto(device);
     }
 
+    @Transactional
+    public void changeDeviceManagedStatus(Long deviceId) {
+        Device device = deviceRepository.findById(deviceId).orElseThrow(
+                () -> new HandleException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ErrorMessages.DEVICE_NOT_FOUND.getMessage() + deviceId)
+        );
+        device.setManaged(!device.getManaged());
+    }
+
     public void deleteDevice(Long deviceId){
         Device device = deviceRepository.findById(deviceId).orElseThrow(
                 () -> new HandleException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ErrorMessages.DEVICE_NOT_FOUND.getMessage() + deviceId)
@@ -81,4 +84,12 @@ public class DeviceService {
         deviceRepository.delete(device);
     }
 
+    // DUE TO CHANGES ON ENTITY THIS METHOD IS USED TO ADAPT CURRENT DEVICES TO NEW ENTITY STRUCTURE, IT CAN BE DELETED IN THE FUTURE
+    @Transactional
+    public void validateAndNormalizeDevices(){
+        List<Device> deviceList = deviceRepository.findAll();
+        deviceList.forEach(device -> {
+            device.setManaged(true);
+        });
+    }
 }

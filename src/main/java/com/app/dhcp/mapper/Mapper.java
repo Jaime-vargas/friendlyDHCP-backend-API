@@ -14,15 +14,16 @@ public class Mapper {
 
     // --- DEVICE ---
     public static DeviceDto entityToDto(Device device){
-        DeviceDto deviceDto = new DeviceDto();
-        deviceDto.setId(device.getId());
-        deviceDto.setCategory(device.getCategory());
-        deviceDto.setName(device.getName());
-        deviceDto.setMac_address(device.getMac_address());
-        deviceDto.setIp_address(device.getIp_address());
-        deviceDto.setNetwork_id(device.getNetwork().getId());
-        deviceDto.setNetwork_name(device.getNetwork().getName());
-        return deviceDto;
+        return new DeviceDto(
+                device.getId(),
+                device.getCategory(),
+                device.getName(),
+                device.getMac_address(),
+                device.getIp_address(),
+                device.getNetwork().getId(),
+                device.getManaged(),
+                device.getNetwork().getName()
+        );
     }
     public static Device dtoToEntity(DeviceDto deviceDto){
         Device device = new Device();

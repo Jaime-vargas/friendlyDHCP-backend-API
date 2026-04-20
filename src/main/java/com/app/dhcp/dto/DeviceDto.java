@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 
 public class DeviceDto{
     Long id;
@@ -21,5 +20,6 @@ public class DeviceDto{
     String mac_address;
     String ip_address;
     Long network_id;
+    Boolean managed;
     String network_name;
 }
